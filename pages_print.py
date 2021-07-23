@@ -7,6 +7,18 @@ class Page:
 		if self.valid(self.pages) == False:
 			raise AttributeError(f'Количество страниц ({self.pages}) не кратно 4-м... ')
 
+	def __str__(self):
+		avers, revers = self.list_of_print()
+#		pages = lambda _list: list(map(lambda i: i, _list))
+		item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
+		def pages(_list):
+			result = ''
+			for i in range(len(_list)):
+				result += f'{i+1}) {item(_list, i)}\n'
+			return result
+
+		return f'avers\n{pages(avers)}\n{"="*20}\n revers\n{pages(revers)}'
+
 	def list_pages_of_print(self):
 		pages = [i for i in range(self.pages+1)]
 		notebook = [i for i in pages[::40]]
@@ -50,8 +62,7 @@ class Page:
 		list_1 = tuple(self.separator_pages(list_1_print))
 		list_2 = tuple(self.separator_pages(list_2_print))
 
-		print(list_1)
-		print(list_2)
+		return list_1, list_2
 
 	def iter(self, list_):
 		for i in list_:
@@ -73,4 +84,11 @@ class Page:
 
 if __name__ == '__main__':
 	pages = Page(460)
-	pages.list_of_print()
+	print(pages)
+#	avers, revers = pages.list_of_print()
+#	def iter(item):
+#		for i in item:
+#			print(i)
+#	iter(avers)
+#	print('='*60)
+#	iter(revers)
