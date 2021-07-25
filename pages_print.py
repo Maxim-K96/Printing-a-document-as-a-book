@@ -1,8 +1,11 @@
 #!/usr/bin/env python3.9
 
+import re
+
 class Page:
 	def __init__(self, pages:int):
 		self.pages = int(pages)
+		print(type(self.pages))
 		self.pages_of_sheet_A4 = 4
 		if self.valid(self.pages) == False:
 			raise AttributeError(f'Количество страниц ({self.pages}) не кратно 4-м... ')
@@ -11,13 +14,13 @@ class Page:
 		avers, revers = self.list_of_print()
 #		pages = lambda _list: list(map(lambda i: i, _list))
 		item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
-		def pages(_list):
+		def pages(_list_1, _list_2):
 			result = ''
-			for i in range(len(_list)):
-				result += f'{i+1}) {item(_list, i)}\n'
+			for i in range(len(_list_1)):
+				result += f'Лист {i+1}\n Аверс: {item(_list_1, i)}\n Реверс: {item(_list_2, i)}\n{"="*60}\n'
 			return result
 
-		return f'avers\n{pages(avers)}\n{"="*20}\n revers\n{pages(revers)}'
+		return f'{pages(avers, revers)}'
 
 	def list_pages_of_print(self):
 		pages = [i for i in range(self.pages+1)]
@@ -71,10 +74,13 @@ class Page:
 
 	def data(self):
 		pages_one_notebook = self.pages_of_sheet_A4*10
+		avers, revers = self.list_of_print()
 		data_set = {
 			'pages_one_notebook': pages_one_notebook, # Количество страниц в одной тетради
 			'pagesA4': self.pages//self.pages_of_sheet_A4, # Количество листов А4
-			'count_notebooks_in_book':self.pages/pages_one_notebook # Количество тетрадей в книге
+			'count_notebooks_in_book':self.pages/pages_one_notebook, # Количество тетрадей в книге
+			'avers': avers,
+			'revers': revers
 			}
 		return data_set
 
@@ -85,10 +91,4 @@ class Page:
 if __name__ == '__main__':
 	pages = Page(460)
 	print(pages)
-#	avers, revers = pages.list_of_print()
-#	def iter(item):
-#		for i in item:
-#			print(i)
-#	iter(avers)
-#	print('='*60)
-#	iter(revers)
+
