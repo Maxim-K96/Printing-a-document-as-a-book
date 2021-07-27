@@ -1,19 +1,22 @@
 #kivy 2.0.0
 
-<MyLabel>:
-	text: 'Формирование страниц для печати'
-	font_size: 20
+#<MyLabel>:
+#	text: 'Формирование страниц для печати'
+#	font_size: 20
 <MyButton>:
 	text: 'Сформировать'
 	font_size: 20
 	background_color: [.32, .85, .94, 1]
 	background_normal: ''
-	size_hint: (.8, .8)
+	size_hint: (.1, 1)
 #	pos: (WIDTH/2-(WIDTH*.25/2), HEIGHT/2-(HEIGHT*.15/2))
 
 <MainWindow>:
 	orientation:'vertical'
-	size_hint: [.4, .4]
-	padding: 25
+	size_hint: [1, 1]
+	padding: 10
+	pos_hint: {'right': 90}
 
-
+<IntInput>:
+#	background_normal:[45,52,54,1]
+#	background_color:[45,52,54,1]
