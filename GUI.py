@@ -11,7 +11,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.lang import Builder
-#from kivy.uix.floatlayout import FloatLayout
 from kivy.config import Config
 
 from kivy.core.window import Window
@@ -24,14 +23,21 @@ Builder.load_file('{}/GUI.kv'.format(
 # Глобальные настройки
 WIDTH = 750
 HEIGHT = 600
+FONT_SIZE_OUTPUT = 14
+FONT_SIZE_ERROR = 16
+
+#Config.set('kivy','window_icon','sivaicon.png')
+#Config.set('graphics', 'resizable', True)
+
 Config.set('graphics', 'resizeble', 0)
 Config.set('graphics', 'width', WIDTH)
 Config.set('graphics', 'height', HEIGHT)
 Window.clearcolor = (32/255, 33/255, 36/255, 1)
-Window.title = "Печать страниц"
+Window.title = 'Печать страниц'
 
 class IntInput(TextInput):
-	pat = re.compile('[^0-9]')
+	not_numbers = '[^0-9]'
+	pat = re.compile(not_numbers)
 	def insert_text(self, substring, from_undo=False):
 		pat = self.pat
 		if pat.search(self.text):
@@ -41,78 +47,85 @@ class IntInput(TextInput):
 
 		return super(IntInput, self).insert_text(s, from_undo=from_undo)
 
-class DataPages(Page):
+class Backand(Page):
 	def __init__(self, pages):
 		Page.__init__(self, pages)
 		self.pages = pages
 
+class TextOutput(TextInput):
+	all_characters = '[\\w+\\s=~|`''""/\\.,)(\\][\\{\\}*^&\\-!\\\\@#$:;?%]'
+	pat = re.compile(all_characters)
+	def insert_text(self, substring, from_undo=False):
+		s = re.sub(self.pat, '', substring)
+		return super(TextOutput, self).insert_text(s, from_undo=from_undo)
 
-class MyButton(Button):
+class MainCase(AnchorLayout):
 	pass
 
-class MainWindow(BoxLayout):
+class ButtonShare(Button):
 	pass
 
-class Bottom_pos(AnchorLayout):
+class SecondCase(BoxLayout):
 	pass
-#class MyLabel(Label):
-#	pass
 
+class ButtonAndPagesInput(GridLayout):
+	pass
+
+class BottomHalfOfTheSecondContainer(AnchorLayout):
+	pass
 
 class MyApp(App):
-	# Создание всех виджетов (объектов)
 	def __init__(self):
 		super().__init__()
-		self.label = IntInput(size_hint = (1, .9), auto_indent=True)
-		self.text_input = IntInput(size_hint = (.03, .05), font_size=20)
-		self.button = MyButton(on_press = self.btn_press)
+		self.output = TextOutput()
+		self.page_input = IntInput() #focus=True
+		self.button = ButtonShare(on_press = self.btn_press)
 
 	def build(self):
-		al = AnchorLayout()
-		layout = MainWindow()
-		gl = GridLayout(cols=2, spacing=4, size_hint=(.5, 1), padding=4)
-		layout.add_widget(self.label)
-		al_2 = AnchorLayout(anchor_x='right', anchor_y='bottom', size_hint=(1, .1))
-		gl.add_widget(self.text_input)
-		gl.add_widget(self.button)
-		al_2.add_widget(gl)
-		layout.add_widget(al_2)
-		al.add_widget(layout)
+		main_case = MainCase()
+		second_case = SecondCase()
+		bottom_half_of_the_second_container = BottomHalfOfTheSecondContainer()
+		btn__and__input_pages = ButtonAndPagesInput()
 
-		return al
+		second_case.add_widget(self.output)
+		second_case.add_widget(bottom_half_of_the_second_container)
 
-	def type_cast(self, obj):
-		if obj.isdecimal() == True:
-			return int(obj)
-		elif obj.isalnum() == False:
-			print('Error. Вы не ввели никакого значения. Повторите ввод!!!')
-			return False
-		else:
-			print('Error. Вы ввели некоректное значение. Повторите ввод!!!')
-			return False
+		btn__and__input_pages.add_widget(self.page_input)
+		btn__and__input_pages.add_widget(self.button)
 
-	def add_text(self, string:str, clear=False, font_size=20):
-		if clear == True:
-			self.label.text = ''
-		self.label.font_size = font_size
-		self.label.text += string
+		bottom_half_of_the_second_container.add_widget(btn__and__input_pages)
+
+		main_case.add_widget(second_case)
+
+		return main_case
+
+	def datatype_ghost(self, data:str)->int:
+		if data.isdecimal():
+			return int(data)
+		raise AttributeError(f'AttributeError. Вы ввели некоректное значение. Повторите ввод!!!')
+
+	def add_text(self, string:str, clear_window=False, font_size=20):
+		if clear_window:
+			self.output.text = ''
+		self.output.font_size = font_size
+		self.output.text += string
+
+	def data_output(self):
+		try:
+			data = self.datatype_ghost(self.page_input.text)
+			request = Backand(data)
+			avers, revers = request.response()
+			item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
+			self.add_text('', clear_window=True)
+			for i in range(len(avers)):
+				result = f'\n{"="*25} Лист {i+1} {"="*25}\n Аверс: {item(avers, i)}\n Реверс: {item(revers, i)}\n'
+				self.add_text(result, font_size=FONT_SIZE_OUTPUT)
+		except AttributeError as err:
+			message_error = f'AttributeError {err}'
+			self.add_text(message_error, clear_window=True, font_size=FONT_SIZE_ERROR)
 
 	def btn_press(self, instance):
-		try:
-			valid = self.type_cast(self.text_input.text)
-			if valid == False:
-				self.add_text('Error. Вы ввели некоректное значение. Повторите ввод!!!', clear=True)
-#				valid = self.type_cast(self.text_input.text)
-			pages = DataPages(valid)
-			avers, revers = pages.list_of_print()
-			item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
-			self.add_text('', clear=True)
-			for i in range(len(avers)):
-				self.add_text(f'Лист {i+1}\n Аверс: {item(avers, i)}\n Реверс: {item(revers, i)}\n{"="*60}\n', font_size=14)
-		except AttributeError:
-			self.label.color = [.90, .48, .49]
-			self.label.text = f'Error. Количество страниц ({self.text_input.text}) не кратно 4-м...'
-
+		self.data_output()
 
 if __name__ == '__main__':
 	MyApp().run()

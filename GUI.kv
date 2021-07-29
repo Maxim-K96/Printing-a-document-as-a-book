@@ -1,22 +1,42 @@
 #kivy 2.0.0
 
-#<MyLabel>:
-#	text: 'Формирование страниц для печати'
-#	font_size: 20
-<MyButton>:
+<ButtonShare>:
 	text: 'Сформировать'
 	font_size: 20
 	background_color: [.32, .85, .94, 1]
 	background_normal: ''
 	size_hint: (.1, 1)
-#	pos: (WIDTH/2-(WIDTH*.25/2), HEIGHT/2-(HEIGHT*.15/2))
 
-<MainWindow>:
+<SecondCase>:
 	orientation:'vertical'
 	size_hint: [1, 1]
 	padding: 10
 	pos_hint: {'right': 90}
 
+<TextOutput>:
+	size_hint: (1, .9)
+	auto_indent:True
+	border:[20,20,20,20]
+	background_color:[32/255, 33/255, 36/255, 1]
+	foreground_color:[223/255, 230/255, 233/255,1]
+	padding:[25,0,0,0] #left, top, right, bottom
+	selection_color:[116/255, 185/255, 255/255,.5]
+
 <IntInput>:
-#	background_normal:[45,52,54,1]
-#	background_color:[45,52,54,1]
+	size_hint: (.03, .05)
+	font_size: 20
+	auto_indent:True
+	padding:[22,10,0,0]
+#	background_color:[0, 0, 0, 1]
+#	focus:True
+
+<ButtonAndPagesInput>:
+	cols:2
+	spacing:4
+	size_hint:(.5, 1)
+	padding:4
+
+<BottomHalfOfTheSecondContainer>:
+	anchor_x:'right'
+	anchor_y:'bottom'
+	size_hint:(1, .1)
