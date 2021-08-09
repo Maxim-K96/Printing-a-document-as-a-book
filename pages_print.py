@@ -22,6 +22,12 @@ class Page:
 
 		return f'{pages(avers, revers)}'
 
+	def info(self):
+		info = {
+			'page_A4':self.pages_in_a_book//4, 
+			'all_pages':self.pages_in_a_book}
+		return info
+
 	def formation_of_notebook(self):
 		all_pages_in_book = [i for i in range(self.pages_in_a_book+1)]
 		pages_in_notebook = [i for i in all_pages_in_book[::40]]

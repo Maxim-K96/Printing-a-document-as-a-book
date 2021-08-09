@@ -1,19 +1,25 @@
 #kivy 2.0.0
+#(documentation):[]
 
 <ButtonShare>:
+	id: btn
 	text: 'Сформировать'
 	font_size: 20
 	background_color: [.32, .85, .94, 1]
 	background_normal: ''
-	size_hint: (.1, 1)
+	size_hint: (.2, 1)
+#	on_release:
+#		root.message()
 
 <SecondCase>:
+	id: second_case
 	orientation:'vertical'
 	size_hint: [1, 1]
 	padding: 10
 	pos_hint: {'right': 90}
 
 <TextOutput>:
+	id: text_output
 	size_hint: (1, .9)
 	auto_indent:True
 	border:[20,20,20,20]
@@ -23,20 +29,33 @@
 	selection_color:[116/255, 185/255, 255/255,.5]
 
 <IntInput>:
-	size_hint: (.03, .05)
+	id: int_input
+	size_hint: (.06, .05)
 	font_size: 20
 	auto_indent:True
 	padding:[22,10,0,0]
 #	background_color:[0, 0, 0, 1]
 #	focus:True
 
+<LabelInfo>:
+	id: label_info
+	pos_hint:{'center_x': 0.5, 'center_y': .95}
+	halign: 'left'
+	valign: 'middle'
+	text_size: self.width, None
+	size_hint:(.25, None)
+	height: self.texture_size[1]
+	color:(.255, 40, 0, 1)
+
 <ButtonAndPagesInput>:
-	cols:2
+	id: grid
+	cols:3
 	spacing:4
-	size_hint:(.5, 1)
+	size_hint:(.9, 1)
 	padding:4
 
 <BottomHalfOfTheSecondContainer>:
+	id: bottom
 	anchor_x:'right'
 	anchor_y:'bottom'
 	size_hint:(1, .1)

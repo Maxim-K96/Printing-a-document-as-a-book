@@ -16,7 +16,7 @@ from kivy.config import Config
 from kivy.core.window import Window
 
 root = os.path.split(__file__)[0]
-Builder.load_file('{}/GUI.kv'.format(
+Builder.load_file('{}\\GUI.kv'.format(
 	root if root != '' else os.getcwd())
 )
 
@@ -74,24 +74,30 @@ class ButtonAndPagesInput(GridLayout):
 class BottomHalfOfTheSecondContainer(AnchorLayout):
 	pass
 
+class LabelInfo(Label):
+	pass
+
+
 class MyApp(App):
 	def __init__(self):
 		super().__init__()
 		self.output = TextOutput()
 		self.page_input = IntInput() #focus=True
-		self.button = ButtonShare(on_press = self.btn_press)
+		self.info = LabelInfo(markup=True)
 
 	def build(self):
 		main_case = MainCase()
 		second_case = SecondCase()
 		bottom_half_of_the_second_container = BottomHalfOfTheSecondContainer()
 		btn__and__input_pages = ButtonAndPagesInput()
+		button = ButtonShare(on_press = self.btn_press)
 
 		second_case.add_widget(self.output)
 		second_case.add_widget(bottom_half_of_the_second_container)
 
+		btn__and__input_pages.add_widget(self.info)
 		btn__and__input_pages.add_widget(self.page_input)
-		btn__and__input_pages.add_widget(self.button)
+		btn__and__input_pages.add_widget(button)
 
 		bottom_half_of_the_second_container.add_widget(btn__and__input_pages)
 
@@ -104,25 +110,40 @@ class MyApp(App):
 			return int(data)
 		raise AttributeError(f'AttributeError. Вы ввели некоректное значение. Повторите ввод!!!')
 
-	def add_text(self, string:str, clear_window=False, font_size=20):
-		if clear_window:
-			self.output.text = ''
+	def clear(self):
+		self.output.text = ''
+
+	def add_text(self, string='', font_size=20):
 		self.output.font_size = font_size
 		self.output.text += string
 
-	def data_output(self):
+	def label_text(self, text, colour='2c3e50'):
+		if '#' in colour:
+			colour = colour.split('#')[-1]
+		self.info.text = f'[color={colour}]{text}[/color]'
+
+	def data(self):
 		try:
 			data = self.datatype_ghost(self.page_input.text)
-			request = Backand(data)
-			avers, revers = request.response()
-			item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
-			self.add_text('', clear_window=True)
-			for i in range(len(avers)):
-				result = f'\n{"="*25} Лист {i+1} {"="*25}\n Аверс: {item(avers, i)}\n Реверс: {item(revers, i)}\n'
-				self.add_text(result, font_size=FONT_SIZE_OUTPUT)
+			self.request = Backand(data)
+			avers, revers = self.request.response()
+			return avers, revers
 		except AttributeError as err:
-			message_error = f'AttributeError {err}'
-			self.add_text(message_error, clear_window=True, font_size=FONT_SIZE_ERROR)
+			return None, err
+
+	def data_output(self):
+		avers, revers = self.data()
+		if avers == None:
+			self.label_text(revers, colour='EA2027'); 
+			self.clear(); return
+		item = lambda _list, index: ','.join((str(i) for i in _list[int(index)]))
+		self.clear()
+		info = self.request.info()
+		text = f'[b]Для печати потребуется листов А4[/b]: [u]{info["page_A4"]}[/u]\n[b]Печать документа объемом[/b]: [u]{info["all_pages"]}[/u] [b]страниц[/b]'
+		self.label_text(text, colour='44bd32')
+		for i in range(len(avers)):
+			result = f'\n{"="*25} Лист {i+1} {"="*25}\n Аверс: {item(avers, i)}\n Реверс: {item(revers, i)}\n'
+			self.add_text(result, font_size=FONT_SIZE_OUTPUT)
 
 	def btn_press(self, instance):
 		self.data_output()
